@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 
-st.set_page_config(page_title="Oncology Dashboard Exporter", layout="wide")
+st.set_page_config(page_title="Oncology Dashboard SKMCH & RC", layout="wide")
 
 st.markdown("""
 <style>
@@ -13,7 +13,7 @@ footer { text-align:center; margin-top:40px; font-size:12px; color:gray; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Oncology Dashboard Exporter")
+st.title("Oncology Dashboard SKMCH & RC")
 
 st.markdown('<div class="upload-box">', unsafe_allow_html=True)
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])

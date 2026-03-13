@@ -112,13 +112,15 @@ months.forEach(m => {{
     monthSelect.appendChild(opt);
 }})
 
-cancers.forEach(c => {{
-    let opt = document.createElement("option");
-    opt.value = c;
-    opt.text = c;
-    opt.selected = true;
-    cancerSelect.appendChild(opt);
-}})
+cancers.forEach((c, i) => {
+    let opt = document.createElement("option")
+    opt.value = c
+    opt.text = c
+
+    if(i === 0){ opt.selected = true }   // only first selected
+
+    cancerSelect.appendChild(opt)
+})
 
 function getSelected(select) {{
     return Array.from(select.selectedOptions).map(o => o.value)

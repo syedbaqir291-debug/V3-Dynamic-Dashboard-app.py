@@ -2,29 +2,14 @@ import streamlit as st
 import pandas as pd
 import json
 
-st.set_page_config(page_title="Oncology Dashboard SKMCH & RC ", layout="wide")
+st.set_page_config(page_title="Oncology Dashboard Exporter", layout="wide")
 
 st.markdown("""
 <style>
-.stApp {
-    background-color:#f5f7fb;
-}
-h1 {
-    font-family: Arial;
-    font-weight:700;
-}
-.upload-box {
-    background:white;
-    padding:25px;
-    border-radius:10px;
-    box-shadow:0px 3px 10px rgba(0,0,0,0.1);
-}
-footer {
-    text-align:center;
-    margin-top:40px;
-    font-size:12px;
-    color:gray;
-}
+.stApp { background-color:#f5f7fb; }
+h1 { font-family: Arial; font-weight:700; }
+.upload-box { background:white; padding:25px; border-radius:10px; box-shadow:0px 3px 10px rgba(0,0,0,0.1); }
+footer { text-align:center; margin-top:40px; font-size:12px; color:gray; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -78,9 +63,7 @@ select {{ padding:8px; border-radius:6px; border:1px solid #ccc; min-width:180px
 </style>
 </head>
 <body>
-<div class="header">
-<h1>Oncology Dashboard</h1>
-</div>
+<div class="header"><h1>Oncology Dashboard</h1></div>
 
 <div class="container">
 <div class="filters">
@@ -178,15 +161,15 @@ function updateChart() {{
         results.push(obj)
     }})
 
-    let traces = parameters.map(p => ({
-        y: results.map(r=>r["Cancer Category"]),
-        x: results.map(r=>r[p]),
+    let traces = parameters.map(p => ({{
+        y: results.map(r => r["Cancer Category"]),
+        x: results.map(r => r[p]),
         name: p,
         type: "bar",
         orientation: "h",
-        text: results.map(r=>r[p]),
+        text: results.map(r => r[p]),
         textposition: "auto"
-    }))
+    }}))
 
     let layout = {{
         barmode: "group",
@@ -252,6 +235,4 @@ updateChart()
         mime="text/html"
     )
 
-    st.markdown("""
-    <footer>OMAC Developers by S M Baqir</footer>
-    """, unsafe_allow_html=True)
+    st.markdown("""<footer>OMAC Developers by S M Baqir</footer>""", unsafe_allow_html=True)

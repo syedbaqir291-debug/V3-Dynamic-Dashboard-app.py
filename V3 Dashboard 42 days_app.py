@@ -178,7 +178,7 @@ function updateChart() {{
         title: metric + " by Cancer Category",
         height: 600,
         xaxis: {{
-            range: metric === "Maximum" ? [0, 350] : (["Mean","Median","Minimum"].includes(metric) ? [0,150] : null)
+            range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
         }}
     }}
 

@@ -37,7 +37,7 @@ if uploaded_file:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     data_json = df.to_json(orient="records")
-    months = sorted(df[month_col].dropna().unique())
+    months = pd.to_datetime(df[month_col], errors="coerce").sort_values().dt.strftime('%b-%y').dropna().unique().tolist()
     cancers = sorted(df[cancer_col].dropna().unique())
     months_js = json.dumps(months)
     cancers_js = json.dumps(cancers)

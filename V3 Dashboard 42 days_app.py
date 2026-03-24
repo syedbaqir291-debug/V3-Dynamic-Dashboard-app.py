@@ -7,7 +7,6 @@ st.set_page_config(page_title="Oncology Dashboard SKMCH & RC", layout="wide")
 st.markdown("""
 <style>
 .stApp { background-color:#f5f7fb; }
-
 h1 { font-family: Arial; font-weight:700; }
 
 .upload-box {
@@ -17,40 +16,19 @@ h1 { font-family: Arial; font-weight:700; }
     box-shadow:0px 3px 10px rgba(0,0,0,0.1);
 }
 
-.filters {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
-    align-items: flex-start;
-    overflow-x: auto;
-}
-
-.filter-box {
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-}
-
+/* ✅ Benchmark Box (NEW - DOES NOT TOUCH LOGIC) */
 .benchmark-box {
-    background: #ffffff;
+    position: absolute;
+    top: 120px;
+    right: 40px;
+    background: white;
     padding: 15px 20px;
     border-radius: 10px;
     box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
     font-size: 13px;
     line-height: 1.6;
-    min-width: 280px;
-}
-
-#chart, #runChart {
-    margin-top: 30px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
+    border-left: 4px solid #333;
+    z-index: 999;
 }
 
 footer {
@@ -87,8 +65,14 @@ if uploaded_file:
 
     data_json = df.to_json(orient="records")
 
-    months = sorted(df[month_col].dropna().unique(), key=lambda x: pd.to_datetime(x, errors="coerce"))
+    months = df[month_col].dropna().unique()
+    months = sorted(months, key=lambda x: pd.to_datetime(x, errors="coerce"))
+
     cancers = sorted(df[cancer_col].dropna().unique())
+
+    months_js = json.dumps(months)
+    cancers_js = json.dumps(cancers)
+    parameters_js = json.dumps(parameter_cols)
 
     html = f"""
 <!DOCTYPE html>
@@ -98,20 +82,26 @@ if uploaded_file:
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <style>
-body {{
-    font-family: Arial;
-    background:#f5f7fb;
-    margin:0;
+body {{ font-family: Arial; background:#f5f7fb; margin:0; }}
+.header {{ background:#ffffff; padding:20px 40px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }}
+.header h1 {{ margin:0; }}
+
+.container {{ padding:30px 40px; position:relative; }}
+
+.filters {{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
 }}
 
-.header {{
-    background:#ffffff;
-    padding:20px 40px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}}
-
-.container {{
-    padding:30px 40px;
+.filter-box {{
+    display:flex;
+    flex-direction:column;
+    font-size:14px;
 }}
 
 select {{
@@ -121,23 +111,49 @@ select {{
     min-width:180px;
 }}
 
-label {{
-    font-weight:bold;
-    margin-bottom:5px;
+#chart {{
+    margin-top:30px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
+}}
+
+#runChart {{
+    margin-top:40px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
+}}
+
+.footer {{
+    text-align:center;
+    font-size:12px;
+    color:#666;
+    margin-top:40px;
+    padding-bottom:20px;
 }}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<h1>Oncology Dashboard</h1>
-</div>
+<div class="header"><h1>Oncology Dashboard</h1></div>
 
 <div class="container">
 
-<div class="filters">
+<!-- ✅ BENCHMARK BOX (ONLY ADDITION) -->
+<div class="benchmark-box">
+<strong>Benchmarks:</strong><br>
+1st visit - WIC acceptance: &lt; 15<br>
+WIC acceptance - 1st OPD: &lt; 7<br>
+1st OPD visit - MDT: &lt; 10<br>
+MDT - 1st day of Treatment: &lt; 20<br>
+Number of Days: &lt; 43
+</div>
 
+<div class="filters">
 <div class="filter-box">
 <label>Metric</label>
 <select id="metric">
@@ -158,18 +174,6 @@ label {{
 <label>Cancer Category</label>
 <select id="cancer" multiple></select>
 </div>
-
-<div class="benchmark-box">
-<strong>Benchmarks:</strong><br><br>
-
-<span style="color:#1f77b4;">1st visit - WIC acceptance: &lt; 15</span><br>
-<span style="color:#ff7f0e;">WIC acceptance - 1st OPD visit: &lt; 7</span><br>
-<span style="color:#2ca02c;">1st OPD visit - MDT: &lt; 10</span><br>
-<span style="color:#d62728;">MDT - 1st day of treatment: &lt; 20</span><br>
-<span style="color:#9467bd;">Number of days: &lt; 43</span>
-
-</div>
-
 </div>
 
 <div id="chart"></div>
@@ -177,12 +181,13 @@ label {{
 
 </div>
 
-<script>
+<div class="footer">OMAC Developers by S M Baqir</div>
 
-let rawData = {json.dumps(data_json)};
-let months = {json.dumps(months)};
-let cancers = {json.dumps(cancers)};
-let parameters = {json.dumps(parameter_cols)};
+<script>
+let rawData = {data_json};
+let months = {months_js};
+let cancers = {cancers_js};
+let parameters = {parameters_js};
 
 let monthSelect = document.getElementById("month");
 let cancerSelect = document.getElementById("cancer");
@@ -193,7 +198,7 @@ months.forEach(m => {{
     opt.text = m;
     opt.selected = true;
     monthSelect.appendChild(opt);
-}});
+}})
 
 cancers.forEach((c, i) => {{
     let opt = document.createElement("option");
@@ -201,60 +206,46 @@ cancers.forEach((c, i) => {{
     opt.text = c;
     if(i === 0) opt.selected = true;
     cancerSelect.appendChild(opt);
-}});
+}})
 
 function getSelected(select) {{
-    return Array.from(select.selectedOptions).map(o => o.value);
+    return Array.from(select.selectedOptions).map(o => o.value)
 }}
 
 function calculateMetric(values, metric) {{
-    values = values.filter(v => v !== null && !isNaN(v));
-    if(values.length === 0) return 0;
-
-    if(metric === "Mean") return values.reduce((a,b)=>a+b,0)/values.length;
-
+    values = values.filter(v => v !== null && !isNaN(v))
+    if(values.length === 0) return 0
+    if(metric === "Mean") return values.reduce((a,b)=>a+b,0)/values.length
     if(metric === "Median") {{
-        values.sort((a,b)=>a-b);
-        let mid = Math.floor(values.length/2);
-        return values.length%2 ? values[mid] : (values[mid-1]+values[mid])/2;
+        values.sort((a,b)=>a-b)
+        let mid = Math.floor(values.length/2)
+        return values.length%2 ? values[mid] : (values[mid-1]+values[mid])/2
     }}
-
     if(metric === "SD") {{
-        let mean = values.reduce((a,b)=>a+b,0)/values.length;
-        let variance = values.reduce((a,b)=>a+(b-mean)**2,0)/(values.length-1);
-        return Math.sqrt(variance);
+        let mean = values.reduce((a,b)=>a+b,0)/values.length
+        let variance = values.reduce((a,b)=>a+(b-mean)**2,0)/(values.length-1)
+        return Math.sqrt(variance)
     }}
-
-    if(metric === "Maximum") return Math.max(...values);
-    if(metric === "Minimum") return Math.min(...values);
+    if(metric === "Maximum") return Math.max(...values)
+    if(metric === "Minimum") return Math.min(...values)
 }}
 
 function updateChart() {{
-    let metric = document.getElementById("metric").value;
-    let monthsSelected = getSelected(monthSelect);
-    let cancerSelected = getSelected(cancerSelect);
+    let metric = document.getElementById("metric").value
+    let monthsSelected = getSelected(monthSelect)
+    let cancerSelected = getSelected(cancerSelect)
 
-    let filtered = rawData.filter(r =>
-        monthsSelected.includes(r["Month"]) &&
-        cancerSelected.includes(r["Cancer Category"])
-    );
+    let filtered = rawData.filter(r => monthsSelected.includes(r["Month"]) && cancerSelected.includes(r["Cancer Category"]))
 
-    let results = [];
-
+    let results = []
     cancerSelected.forEach(cancer => {{
-        let obj = {{}};
-        obj["Cancer Category"] = cancer;
-
+        let obj = {{"Cancer Category": cancer}}
         parameters.forEach(p => {{
-            let vals = filtered
-                .filter(r => r["Cancer Category"] === cancer)
-                .map(r => r[p]);
-
-            obj[p] = Number(calculateMetric(vals, metric).toFixed(1));
-        }});
-
-        results.push(obj);
-    }});
+            let vals = filtered.filter(r => r["Cancer Category"] === cancer).map(r => r[p])
+            obj[p] = Number(calculateMetric(vals, metric).toFixed(1))
+        }})
+        results.push(obj)
+    }})
 
     let traces = parameters.map(p => ({{
         y: results.map(r => r["Cancer Category"]),
@@ -264,59 +255,57 @@ function updateChart() {{
         orientation: "h",
         text: results.map(r => r[p]),
         textposition: "auto"
-    }}));
+    }}))
 
     let layout = {{
         barmode: "group",
-        height: 600,
         title: metric + " by Cancer Category",
+        height: 600,
         xaxis: {{
-            range: metric === "Maximum" ? [0, 550] :
-                   (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
+            range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
         }}
-    }};
+    }}
 
-    Plotly.newPlot("chart", traces, layout);
-    updateRunChart();
+    Plotly.newPlot("chart", traces, layout)
+    updateRunChart()
 }}
 
 function updateRunChart() {{
-    let monthsSelected = getSelected(monthSelect);
-    let cancerSelected = getSelected(cancerSelect);
+    let monthsSelected = getSelected(monthSelect)
+    let cancerSelected = getSelected(cancerSelect)
 
     let monthlyCompliance = monthsSelected.map(m => {{
-        let rows = rawData.filter(r =>
-            r["Month"] === m &&
-            cancerSelected.includes(r["Cancer Category"])
-        );
+        let rows = rawData.filter(r => r["Month"] === m && cancerSelected.includes(r["Cancer Category"]))
+        if(rows.length === 0) return 0
+        let met = rows.filter(r => r["Number of days"] <= 42).length
+        return +(met / rows.length * 100).toFixed(1)
+    }})
 
-        if(rows.length === 0) return 0;
-
-        let met = rows.filter(r => r["Number of days"] <= 42).length;
-        return +(met / rows.length * 100).toFixed(1);
-    }});
-
-    Plotly.newPlot("runChart", [{{
+    let runTrace = {{
         x: monthsSelected,
         y: monthlyCompliance,
         type: "scatter",
         mode: "lines+markers",
+        name: "Monthly Compliance %",
         line: {{color:"#FF5733", width:3}},
         marker: {{size:8}}
-    }}], {{
+    }}
+
+    let runLayout = {{
         title: "Monthly Compliance Run Chart",
         height: 400,
         yaxis: {{range:[0,100], title:"Compliance (%)"}},
         xaxis: {{title:"Month"}}
-    }});
+    }}
+
+    Plotly.newPlot("runChart", [runTrace], runLayout)
 }}
 
-document.getElementById("metric").addEventListener("change", updateChart);
-monthSelect.addEventListener("change", updateChart);
-cancerSelect.addEventListener("change", updateChart);
+document.getElementById("metric").addEventListener("change", updateChart)
+monthSelect.addEventListener("change", updateChart)
+cancerSelect.addEventListener("change", updateChart)
 
-updateChart();
-
+updateChart()
 </script>
 
 </body>
@@ -331,3 +320,5 @@ updateChart();
         file_name="oncology_dashboard.html",
         mime="text/html"
     )
+
+    st.markdown("""<footer>OMAC Developers by S M Baqir</footer>""", unsafe_allow_html=True)

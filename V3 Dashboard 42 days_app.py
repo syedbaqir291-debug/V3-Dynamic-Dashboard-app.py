@@ -10,7 +10,6 @@ st.markdown("""
 
 h1 { font-family: Arial; font-weight:700; }
 
-/* Upload box */
 .upload-box {
     background:white;
     padding:25px;
@@ -18,7 +17,6 @@ h1 { font-family: Arial; font-weight:700; }
     box-shadow:0px 3px 10px rgba(0,0,0,0.1);
 }
 
-/* 🔥 SINGLE ROW FILTER LAYOUT */
 .filters {
     display: flex;
     flex-wrap: nowrap;
@@ -31,14 +29,12 @@ h1 { font-family: Arial; font-weight:700; }
     overflow-x: auto;
 }
 
-/* Filter box */
 .filter-box {
     display: flex;
     flex-direction: column;
     font-size: 14px;
 }
 
-/* Benchmark box */
 .benchmark-box {
     background: #ffffff;
     padding: 15px 20px;
@@ -49,7 +45,6 @@ h1 { font-family: Arial; font-weight:700; }
     min-width: 280px;
 }
 
-/* Chart containers */
 #chart, #runChart {
     margin-top: 30px;
     background: white;
@@ -130,7 +125,6 @@ label {{
     font-weight:bold;
     margin-bottom:5px;
 }}
-
 </style>
 </head>
 
@@ -144,7 +138,6 @@ label {{
 
 <div class="filters">
 
-<!-- Metric -->
 <div class="filter-box">
 <label>Metric</label>
 <select id="metric">
@@ -156,19 +149,16 @@ label {{
 </select>
 </div>
 
-<!-- Month -->
 <div class="filter-box">
 <label>Month</label>
 <select id="month" multiple></select>
 </div>
 
-<!-- Cancer -->
 <div class="filter-box">
 <label>Cancer Category</label>
 <select id="cancer" multiple></select>
 </div>
 
-<!-- Benchmark -->
 <div class="benchmark-box">
 <strong>Benchmarks:</strong><br><br>
 
@@ -197,7 +187,6 @@ let parameters = {json.dumps(parameter_cols)};
 let monthSelect = document.getElementById("month");
 let cancerSelect = document.getElementById("cancer");
 
-/* Populate Month */
 months.forEach(m => {{
     let opt = document.createElement("option");
     opt.value = m;
@@ -206,7 +195,6 @@ months.forEach(m => {{
     monthSelect.appendChild(opt);
 }});
 
-/* Populate Cancer */
 cancers.forEach((c, i) => {{
     let opt = document.createElement("option");
     opt.value = c;
@@ -308,14 +296,14 @@ function updateRunChart() {{
         return +(met / rows.length * 100).toFixed(1);
     }});
 
-    Plotly.newPlot("runChart", [{
+    Plotly.newPlot("runChart", [{{
         x: monthsSelected,
         y: monthlyCompliance,
         type: "scatter",
         mode: "lines+markers",
         line: {{color:"#FF5733", width:3}},
         marker: {{size:8}}
-    }], {{
+    }}], {{
         title: "Monthly Compliance Run Chart",
         height: 400,
         yaxis: {{range:[0,100], title:"Compliance (%)"}},

@@ -149,7 +149,7 @@ select {{
 1st visit - WIC acceptance: &lt; 15<br>
 WIC acceptance - 1st OPD: &lt; 7<br>
 1st OPD visit - MDT: &lt; 10<br>
-MDT 1st day of Treatment: &lt; 20<br>
+MDT - 1st day of Treatment: &lt; 20<br>
 Number of Days: &lt; 43
 </div>
 

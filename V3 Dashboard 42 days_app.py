@@ -25,7 +25,7 @@ h1 { font-family: Arial; font-weight:700; }
     padding: 15px 20px;
     border-radius: 10px;
     box-shadow: 0px 3px 10px rgba(0,0,0,0.15);
-    font-size: 11px;
+    font-size: 09px;
     line-height: 1.6;
     border-left: 4px solid #333;
     z-index: 999;

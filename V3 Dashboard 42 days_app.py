@@ -16,11 +16,26 @@ h1 { font-family: Arial; font-weight:700; }
     box-shadow:0px 3px 10px rgba(0,0,0,0.1);
 }
 
-/* ✅ Benchmark Box (NEW - DOES NOT TOUCH LOGIC) */
+/* 🔥 SINGLE ROW ALIGNMENT */
+.filters {
+    display:flex;
+    flex-wrap: nowrap;
+    gap:20px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
+}
+
+/* Filter Boxes */
+.filter-box {
+    display:flex;
+    flex-direction:column;
+    font-size:14px;
+}
+
+/* Benchmark Box (RIGHT SIDE INLINE) */
 .benchmark-box {
-    position: absolute;
-    top: 120px;
-    right: 40px;
     background: white;
     padding: 15px 20px;
     border-radius: 10px;
@@ -28,7 +43,31 @@ h1 { font-family: Arial; font-weight:700; }
     font-size: 13px;
     line-height: 1.6;
     border-left: 4px solid #333;
-    z-index: 999;
+    margin-left: 10px;
+}
+
+/* Select Styling */
+select {
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    min-width:180px;
+}
+
+#chart {
+    margin-top:30px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
+}
+
+#runChart {
+    margin-top:40px;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
 }
 
 footer {
@@ -78,61 +117,22 @@ if uploaded_file:
 <!DOCTYPE html>
 <html>
 <head>
-<title>Oncology Dashboard</title>
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <style>
 body {{ font-family: Arial; background:#f5f7fb; margin:0; }}
-.header {{ background:#ffffff; padding:20px 40px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }}
-.header h1 {{ margin:0; }}
-
-.container {{ padding:30px 40px; position:relative; }}
-
-.filters {{
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
+.header {{
+    background:#ffffff;
+    padding:20px 40px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }}
-
-.filter-box {{
-    display:flex;
-    flex-direction:column;
-    font-size:14px;
-}}
+.container {{ padding:30px 40px; }}
 
 select {{
     padding:8px;
     border-radius:6px;
     border:1px solid #ccc;
     min-width:180px;
-}}
-
-#chart {{
-    margin-top:30px;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
-}}
-
-#runChart {{
-    margin-top:40px;
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0px 3px 10px rgba(0,0,0,0.08);
-}}
-
-.footer {{
-    text-align:center;
-    font-size:12px;
-    color:#666;
-    margin-top:40px;
-    padding-bottom:20px;
 }}
 </style>
 </head>
@@ -143,45 +143,61 @@ select {{
 
 <div class="container">
 
-<!-- ✅ BENCHMARK BOX (ONLY ADDITION) -->
-<div class="benchmark-box">
-<strong>Benchmarks:</strong><br>
-1st visit - WIC acceptance: &lt; 15<br>
-WIC acceptance - 1st OPD: &lt; 7<br>
-1st OPD visit - MDT: &lt; 10<br>
-MDT - 1st day of Treatment: &lt; 20<br>
-Number of Days: &lt; 43
-</div>
-
+<!-- 🔥 FILTERS + BENCHMARK IN ONE ROW -->
 <div class="filters">
-<div class="filter-box">
-<label>Metric</label>
-<select id="metric">
-<option>Mean</option>
-<option>Median</option>
-<option>SD</option>
-<option>Maximum</option>
-<option>Minimum</option>
-</select>
-</div>
 
-<div class="filter-box">
-<label>Month</label>
-<select id="month" multiple></select>
-</div>
+    <div class="filter-box">
+        <label>Metric</label>
+        <select id="metric">
+            <option>Mean</option>
+            <option>Median</option>
+            <option>SD</option>
+            <option>Maximum</option>
+            <option>Minimum</option>
+        </select>
+    </div>
 
-<div class="filter-box">
-<label>Cancer Category</label>
-<select id="cancer" multiple></select>
-</div>
+    <div class="filter-box">
+        <label>Month</label>
+        <select id="month" multiple></select>
+    </div>
+
+    <div class="filter-box">
+        <label>Cancer Category</label>
+        <select id="cancer" multiple></select>
+    </div>
+
+    <!-- 🔥 BENCHMARK RIGHT SIDE -->
+    <div class="benchmark-box">
+        <strong>Benchmarks:</strong><br>
+
+        <span style="color:#1f77b4;">
+        1st visit - WIC acceptance: &lt; 15
+        </span><br>
+
+        <span style="color:#ff7f0e;">
+        WIC acceptance - 1st OPD: &lt; 7
+        </span><br>
+
+        <span style="color:#2ca02c;">
+        1st OPD visit - MDT: &lt; 10
+        </span><br>
+
+        <span style="color:#d62728;">
+        MDT - 1st day of Treatment: &lt; 20
+        </span><br>
+
+        <span style="color:#9467bd;">
+        Number of Days: &lt; 43
+        </span><br>
+    </div>
+
 </div>
 
 <div id="chart"></div>
 <div id="runChart"></div>
 
 </div>
-
-<div class="footer">OMAC Developers by S M Baqir</div>
 
 <script>
 let rawData = {data_json};
@@ -198,7 +214,7 @@ months.forEach(m => {{
     opt.text = m;
     opt.selected = true;
     monthSelect.appendChild(opt);
-}})
+}});
 
 cancers.forEach((c, i) => {{
     let opt = document.createElement("option");
@@ -206,7 +222,7 @@ cancers.forEach((c, i) => {{
     opt.text = c;
     if(i === 0) opt.selected = true;
     cancerSelect.appendChild(opt);
-}})
+}});
 
 function getSelected(select) {{
     return Array.from(select.selectedOptions).map(o => o.value)
@@ -235,9 +251,13 @@ function updateChart() {{
     let monthsSelected = getSelected(monthSelect)
     let cancerSelected = getSelected(cancerSelect)
 
-    let filtered = rawData.filter(r => monthsSelected.includes(r["Month"]) && cancerSelected.includes(r["Cancer Category"]))
+    let filtered = rawData.filter(r =>
+        monthsSelected.includes(r["Month"]) &&
+        cancerSelected.includes(r["Cancer Category"])
+    )
 
     let results = []
+
     cancerSelected.forEach(cancer => {{
         let obj = {{"Cancer Category": cancer}}
         parameters.forEach(p => {{
@@ -247,26 +267,25 @@ function updateChart() {{
         results.push(obj)
     }})
 
-    let traces = parameters.map(p => ({{
+    let colors = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"]
+
+    let traces = parameters.map((p,i) => ({{
         y: results.map(r => r["Cancer Category"]),
         x: results.map(r => r[p]),
         name: p,
         type: "bar",
         orientation: "h",
+        marker: {{color: colors[i]}},
         text: results.map(r => r[p]),
         textposition: "auto"
     }}))
 
-    let layout = {{
+    Plotly.newPlot("chart", traces, {{
         barmode: "group",
         title: metric + " by Cancer Category",
-        height: 600,
-        xaxis: {{
-            range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
-        }}
-    }}
+        height: 600
+    }})
 
-    Plotly.newPlot("chart", traces, layout)
     updateRunChart()
 }}
 
@@ -275,13 +294,16 @@ function updateRunChart() {{
     let cancerSelected = getSelected(cancerSelect)
 
     let monthlyCompliance = monthsSelected.map(m => {{
-        let rows = rawData.filter(r => r["Month"] === m && cancerSelected.includes(r["Cancer Category"]))
+        let rows = rawData.filter(r =>
+            r["Month"] === m &&
+            cancerSelected.includes(r["Cancer Category"])
+        )
         if(rows.length === 0) return 0
         let met = rows.filter(r => r["Number of days"] <= 42).length
         return +(met / rows.length * 100).toFixed(1)
     }})
 
-    let runTrace = {{
+    Plotly.newPlot("runChart", [{{
         x: monthsSelected,
         y: monthlyCompliance,
         type: "scatter",
@@ -289,16 +311,11 @@ function updateRunChart() {{
         name: "Monthly Compliance %",
         line: {{color:"#FF5733", width:3}},
         marker: {{size:8}}
-    }}
-
-    let runLayout = {{
+    }}], {{
         title: "Monthly Compliance Run Chart",
         height: 400,
-        yaxis: {{range:[0,100], title:"Compliance (%)"}},
-        xaxis: {{title:"Month"}}
-    }}
-
-    Plotly.newPlot("runChart", [runTrace], runLayout)
+        yaxis: {{range:[0,100], title:"Compliance (%)"}}
+    }})
 }}
 
 document.getElementById("metric").addEventListener("change", updateChart)
@@ -321,4 +338,4 @@ updateChart()
         mime="text/html"
     )
 
-    st.markdown("""<footer>OMAC Developers by S M Baqir</footer>""", unsafe_allow_html=True)
+    st.markdown("<footer>OMAC Developers by S M Baqir</footer>", unsafe_allow_html=True)

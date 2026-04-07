@@ -257,7 +257,7 @@ function updateChart() {{
         textposition: "auto"
     }}))
 
-    let layout = {
+    let layout = {{
     barmode: "group",
     title: metric + " by Cancer Category",
     height: 600,
@@ -276,7 +276,7 @@ function updateChart() {{
     xaxis: {
         range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
     }
-}
+}}
 
 function updateRunChart() {{
     let monthsSelected = getSelected(monthSelect)

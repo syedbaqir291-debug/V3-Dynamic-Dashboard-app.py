@@ -257,18 +257,26 @@ function updateChart() {{
         textposition: "auto"
     }}))
 
-    let layout = {{
-        barmode: "group",
-        title: metric + " by Cancer Category",
-        height: 600,
-        xaxis: {{
-            range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
-        }}
-    }}
+    let layout = {
+    barmode: "group",
+    title: metric + " by Cancer Category",
+    height: 600,
 
-    Plotly.newPlot("chart", traces, layout)
-    updateRunChart()
-}}
+    margin: { 
+        l: 250,   // ✅ increase left margin (key fix)
+        r: 40,
+        t: 60,
+        b: 40
+    },
+
+    yaxis: {
+        automargin: true   // ✅ lets Plotly auto adjust if needed
+    },
+
+    xaxis: {
+        range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
+    }
+}
 
 function updateRunChart() {{
     let monthsSelected = getSelected(monthSelect)

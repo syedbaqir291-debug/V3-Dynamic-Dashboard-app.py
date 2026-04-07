@@ -261,10 +261,22 @@ function updateChart() {{
         barmode: "group",
         title: metric + " by Cancer Category",
         height: 600,
+
+        margin: {{
+            l: 300,   // ✅ FIX: gives space for long cancer names
+            r: 40,
+            t: 60,
+            b: 40
+        }},
+
+        yaxis: {{
+            automargin: true   // ✅ extra protection (auto adjust)
+        }},
+
         xaxis: {{
             range: metric === "Maximum" ? [0, 550] : (["Mean","Median","SD","Minimum"].includes(metric) ? [0,150] : null)
-        }}
-    }}
+         }}
+  }}
 
     Plotly.newPlot("chart", traces, layout)
     updateRunChart()
